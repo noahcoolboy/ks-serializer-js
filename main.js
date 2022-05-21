@@ -15,7 +15,7 @@ function generate(data) {
         endian = (data.meta.endian || endian).toUpperCase()
         encoding = (data.meta.encoding || encoding).toLowerCase()
     }
-    
+
     const typeMap = {
         "u1": "writeUInt8",
         "u2": "writeUInt16",
@@ -46,7 +46,7 @@ function generate(data) {
         "str": "writeStr",
         "strz": "writeStrNT",
     }
-    
+
     let types = []
     if (data.types) {
         Object.keys(data.types).forEach((k) => {
@@ -55,7 +55,7 @@ function generate(data) {
             for (let item of data.types[k].seq) {
                 if (item.repeat)
                     type.push(`for(let entry of data.${transformName(item.id)}) {`)
-    
+
                 if (typeof item.type == "object") {
                     type.push(`\tswitch(data.${transformName(item.type["switch-on"])}) {`)
                     for (let item2 in item.type.cases) {
@@ -63,14 +63,14 @@ function generate(data) {
                         if (item2.match(/^[a-zA-Z0-9_-]+::[a-zA-Z0-9_-]+$/)) {
                             key = Object.keys(data.enums[item2.split("::")[0]]).find((k, i, o) => data.enums[item2.split("::")[0]][k] == item2.split("::")[1])
                         }
-    
+
                         if (item2 != "_") {
                             type.push("\t\tcase " + (key || item2) + ":")
                             type.push(`\t\t\tthis.${typeMap[item.type.cases[item2]] || "write" + transformName(item.type.cases[item2], true)}(${item.repeat ? "entry" : `data.${transformName(item.id)}`})`)
                             type.push("\t\t\tbreak")
                         }
                     }
-    
+
                     type.push("\t\tdefault:")
                     type.push(`\t\t\tthis.${typeMap[item.type.cases["_"] || "u_int8_array"] || "write" + transformName(item.type.cases["_"] || "u_int8_array", true)}(${item.repeat ? "entry" : `data.${transformName(item.id)}`})`)
                     type.push(`\t}`)
@@ -81,7 +81,7 @@ function generate(data) {
                     item.type = item.type.toLowerCase()
                     type.push(`\tthis.${typeMap[item.type] || "write" + transformName(item.type, true)}(${item.repeat ? "entry" : `data.${transformName(item.id)}`})`)
                 }
-    
+
                 if (item.repeat)
                     type.push(`}`)
             }
@@ -90,12 +90,12 @@ function generate(data) {
             types.push(type.join("\n"))
         })
     }
-    
+
     let seq = []
     for (let item of data.seq) {
         if (item.repeat)
             seq.push(`for(let entry of data.${transformName(item.id)}) {`)
-    
+
         if (typeof item.type == "object") {
             seq.push(`\tswitch(data.${transformName(item.type["switch-on"])}) {`)
             for (let item2 in item.type.cases) {
@@ -103,14 +103,14 @@ function generate(data) {
                 if (item2.match(/^[a-zA-Z0-9_-]+::[a-zA-Z0-9_-]+$/)) {
                     key = Object.keys(data.enums[item2.split("::")[0]]).find((k, i, o) => data.enums[item2.split("::")[0]][k] == item2.split("::")[1])
                 }
-    
+
                 if (item2 != "_") {
                     seq.push("\t\tcase " + (key || item2) + ":")
                     seq.push(`\t\t\twriter.${typeMap[item.type.cases[item2]] || "write" + transformName(item.type.cases[item2], true)}(${item.repeat ? "entry" : `data.${transformName(item.id)}`})`)
                     seq.push("\t\t\tbreak")
                 }
             }
-    
+
             seq.push("\t\tdefault:")
             seq.push(`\t\t\twriter.${typeMap[item.type.cases["_"] || "u_int8_array"] || "write" + transformName(item.type.cases["_"] || "u_int8_array", true)}(${item.repeat ? "entry" : `data.${transformName(item.id)}`})`)
             seq.push(`\t}`)
@@ -121,17 +121,17 @@ function generate(data) {
             item.type = item.type.toLowerCase()
             seq.push(`\twriter.${typeMap[item.type] || "write" + transformName(item.type, true)}(${item.repeat ? "entry" : `data.${transformName(item.id)}`})`)
         }
-    
+
         if (item.repeat)
             seq.push(`}`)
     }
-    
+
     return binarywriter.replace("// [CUSTOMTYPES]", types.join("\n\n")).replace("// [SEQUENCE]", seq.join("\n"))
 }
 
 module.exports = generate
 
-if(require.main == module) {
+if (require.main == module) {
     let fs = require("fs")
     let args = process.argv.slice(2)
     let file = args[0]

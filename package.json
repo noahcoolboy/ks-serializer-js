@@ -2,5 +2,30 @@
   "dependencies": {
     "js-yaml": "^4.1.0",
     "kaitai-struct": "^0.9.0"
-  }
+  },
+  "name": "ks-serializer-js",
+  "version": "1.0.0",
+  "description": "A tool to generate a JavaScript serializer from kaitai struct files.",
+  "main": "main.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node tests/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noahcoolboy/ks-serializer-js.git"
+  },
+  "keywords": [
+    "kaitai-struct",
+    "serializer"
+  ],
+  "author": "noahcoolboy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noahcoolboy/ks-serializer-js/issues"
+  },
+  "homepage": "https://github.com/noahcoolboy/ks-serializer-js#readme"
 }
