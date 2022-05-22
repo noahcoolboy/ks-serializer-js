@@ -1,22 +1,40 @@
-/*const fs = require("fs");
-const Test = require("./Test");
-const KaitaiStream = require('kaitai-struct/KaitaiStream');
-
-const fileContent = fs.readFileSync("test.bin");
-const parsed = new Test(new KaitaiStream(fileContent));
-console.log(parsed)*/
-
 const fs = require("fs");
-const Zip = require("./tests/Zip");
-const KaitaiStream = require('kaitai-struct/KaitaiStream');
+const kaitaiStream = require('./KaitaiStream');
 
-const fileContent = fs.readFileSync("Test File.zip");
-const parsed = new Zip(new KaitaiStream(fileContent));
-console.log(parsed)
+const Generator = require("../main")
 
-const reserialize = require("./out")
-fs.writeFileSync("output.zip", reserialize(parsed))
+// PNG serializer generation
+try {
+    fs.writeFileSync("./tests/pngser.js", Generator(fs.readFileSync("./tests/png.ksy", "utf8")))
+} catch (e) {
+    throw new Error("Unable to generate PNG serializer: " + e)
+}
 
-setTimeout(() => {
-    
-}, 50000);
+const png = require("./png");
+const pngser = require("./pngser")
+
+// Test the PNG serializer
+const pngFile = fs.readFileSync("./tests/test.png")
+
+if(Buffer.compare(pngFile, pngser(new png(new kaitaiStream(pngFile)))) != 0) {
+    throw new Error("PNG serializer test failed")
+}
+
+// ZIP serializer generation
+try {
+    fs.writeFileSync("./tests/zipser.js", Generator(fs.readFileSync("./tests/zip.ksy", "utf8")))
+} catch (e) {
+    throw new Error("Unable to generate ZIP serializer: " + e)
+}
+
+const zip = require("./zip");
+const zipser = require("./zipser")
+
+// Test the ZIP serializer
+const zipFile = fs.readFileSync("./tests/test.zip")
+
+if(Buffer.compare(zipFile, zipser(new zip(new kaitaiStream(zipFile)))) != 0) {
+    throw new Error("ZIP serializer test failed")
+}
+
+console.log("Success")

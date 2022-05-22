@@ -2,9 +2,9 @@
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['kaitai-struct/KaitaiStream'], factory);
+    define(['./KaitaiStream'], factory);
   } else if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('kaitai-struct/KaitaiStream'));
+    module.exports = factory(require('./KaitaiStream'));
   } else {
     root.Png = factory(root.KaitaiStream);
   }

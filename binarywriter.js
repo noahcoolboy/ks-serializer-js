@@ -60,6 +60,8 @@ class BinaryWriter {
     }
 
     writeUInt8Array(arr) {
+        if(typeof arr == "number")
+            return this.writeUInt32/* endian */(arr)
         this.buffer.push(Buffer.from(arr))
         this.position += arr.length
     }

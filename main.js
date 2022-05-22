@@ -126,7 +126,7 @@ function generate(data) {
             seq.push(`}`)
     }
 
-    return binarywriter.replace("// [CUSTOMTYPES]", types.join("\n\n")).replace("// [SEQUENCE]", seq.join("\n"))
+    return binarywriter.replace("/* endian */", endian).replace("// [CUSTOMTYPES]", types.join("\n\n")).replace("// [SEQUENCE]", seq.join("\n"))
 }
 
 module.exports = generate
